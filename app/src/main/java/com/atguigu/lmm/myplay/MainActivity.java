@@ -1,125 +1,101 @@
 package com.atguigu.lmm.myplay;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.RadioGroup;
 
 import com.atguigu.lmm.myplay.Base.BaseFragment;
-import com.atguigu.lmm.myplay.Fragemnt.RviewFragment;
 import com.atguigu.lmm.myplay.Fragemnt.NetAudioFragment;
 
 import java.util.ArrayList;
 
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
+
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private RadioGroup rg_main;
+
     /**
-     * 集合
+     * 装多个Fragment
      */
     private ArrayList<BaseFragment> fragments;
-
-    //获得下标
-
+    /**
+     * 下标位置
+     */
     private int position;
+
+    /**
+     * 缓存的Fragment
+     */
     private Fragment tempFragment;
-    private boolean checkSelfPermission;
+
+    SensorManager sensorManager;
+    JCVideoPlayer.JCAutoFullscreenListener sensorEventListener;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-        rg_main = (RadioGroup) findViewById(R.id.rg_main);
-        isGrantExternalRW(this);
-
-
+        initView();
         initFragment();
+        setListener();
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorEventListener = new JCVideoPlayer.JCAutoFullscreenListener();
 
-
-        //设置RadioGroup的监听
-
-        initListennr();
     }
 
-    public static boolean isGrantExternalRW(MainActivity mainActivity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mainActivity.checkSelfPermission(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+    private void initView() {
 
-            mainActivity.requestPermissions(new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            }, 1);
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private void initListennr() {
-        rg_main.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.rb_local_video:
-
-                        position = 0;
-                        break;
-                    case R.id.RView:
-
-                        position = 1;
-                        break;
-
-                }
-                Fragment currentFragment = fragments.get(position);
-                switchFragment(currentFragment);
-
-            }
-        });
-
-        rg_main.check(R.id.rb_local_video);
-    }
-
-    private void switchFragment(Fragment currentFragment) {
-        if (tempFragment != currentFragment) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if (currentFragment != null) {
-                //是否添加过
-                if (!currentFragment.isAdded()) {
-                    //把之前显示的隐藏
-                    if (tempFragment != null) {
-                        ft.hide(tempFragment);
-                    }
-                    ft.add(R.id.fl_mainc_content, currentFragment);
-                } else {
-                    //把之前的隐藏
-                    if (tempFragment != null) {
-                        ft.hide(tempFragment);
-                    }
-                    ft.show(currentFragment);
-                }
-                //最后一部，提交事物
-                ft.commit();
-
-            }
-            tempFragment = currentFragment;
-        }
     }
 
     private void initFragment() {
         fragments = new ArrayList<>();
-        fragments.add(new NetAudioFragment());
-        fragments.add(new RviewFragment());
+        fragments.add(new NetAudioFragment());//网络音频
+
+        //默认显示本地视频
+//        swichFragment(position);
+        defultFragemtn(fragments.get(position));
+
+
     }
 
-    protected void onDestroy() {
-        super.onDestroy();
+    private void defultFragemtn(BaseFragment baseFragment) {
+
+        tempFragment = to;
+        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, to).commit();
 
     }
+
+    private void setListener() {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Sensor accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(sensorEventListener);
+        JCVideoPlayer.releaseAllVideos();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (JCVideoPlayer.backPress()) {
+            return;
+        }
+        super.onBackPressed();
+    }
+
+}
+
 }
 
