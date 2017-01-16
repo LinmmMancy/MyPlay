@@ -1,10 +1,10 @@
 package com.atguigu.lmm.myplay;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -27,15 +27,16 @@ public class MainActivity extends AppCompatActivity {
 
     private int position;
     private Fragment tempFragment;
+    private boolean checkSelfPermission;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
-
         rg_main = (RadioGroup) findViewById(R.id.rg_main);
-
         isGrantExternalRW(this);
+
 
         initFragment();
 
@@ -43,14 +44,13 @@ public class MainActivity extends AppCompatActivity {
         //设置RadioGroup的监听
 
         initListennr();
-
     }
 
-    public static boolean isGrantExternalRW(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity.checkSelfPermission(
+    public static boolean isGrantExternalRW(MainActivity mainActivity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mainActivity.checkSelfPermission(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-            activity.requestPermissions(new String[]{
+            mainActivity.requestPermissions(new String[]{
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
             }, 1);
@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
     private void initListennr() {
         rg_main.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -71,10 +70,11 @@ public class MainActivity extends AppCompatActivity {
 
                         position = 0;
                         break;
-
                     case R.id.RView:
+
                         position = 1;
                         break;
+
                 }
                 Fragment currentFragment = fragments.get(position);
                 switchFragment(currentFragment);
@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
         rg_main.check(R.id.rb_local_video);
     }
-
 
     private void switchFragment(Fragment currentFragment) {
         if (tempFragment != currentFragment) {
@@ -114,18 +113,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFragment() {
         fragments = new ArrayList<>();
-
         fragments.add(new netVideoFragment());
         fragments.add(new RviewFragment());
-
-
-
     }
 
-    @Override
     protected void onDestroy() {
         super.onDestroy();
 
     }
-
 }
+
