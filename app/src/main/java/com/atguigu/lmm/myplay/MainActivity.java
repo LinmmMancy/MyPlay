@@ -12,7 +12,7 @@ import android.widget.RadioGroup;
 
 import com.atguigu.lmm.myplay.Base.BaseFragment;
 import com.atguigu.lmm.myplay.Fragemnt.RviewFragment;
-import com.atguigu.lmm.myplay.Fragemnt.netVideoFragment;
+import com.atguigu.lmm.myplay.Fragemnt.NetAudioFragment;
 
 import java.util.ArrayList;
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFragment() {
         fragments = new ArrayList<>();
-        fragments.add(new netVideoFragment());
+        fragments.add(new NetAudioFragment());
         fragments.add(new RviewFragment());
     }
 
