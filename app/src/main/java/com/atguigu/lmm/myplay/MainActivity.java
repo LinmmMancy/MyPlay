@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.atguigu.lmm.myplay.Base.BaseFragment;
 import com.atguigu.lmm.myplay.Fragemnt.NetAudioFragment;
+import com.atguigu.lmm.myplay.Fragemnt.RecuclerVoewFragment;
 
 import java.util.ArrayList;
 
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     private void initFragment() {
         fragments = new ArrayList<>();
         fragments.add(new NetAudioFragment());//网络音乐
-    //    fragments.add(new RViewFragment());//网络音乐
+        fragments.add(new RecuclerVoewFragment());//网络音乐
 
     }
 
