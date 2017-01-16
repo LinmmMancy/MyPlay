@@ -30,5 +30,6 @@ dependencies {
     compile project(':xutils')
     compile'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'fm.jiecao:jiecaovideoplayer:4.8.3'
 
 }
