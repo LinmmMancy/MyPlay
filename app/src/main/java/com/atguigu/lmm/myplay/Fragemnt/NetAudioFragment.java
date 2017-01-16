@@ -1,9 +1,11 @@
 package com.atguigu.lmm.myplay.Fragemnt;
 
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,6 +33,10 @@ import butterknife.ButterKnife;
  */
 
 public class NetAudioFragment extends BaseFragment {
+
+    private List<NetAudioBean.ListBean> datas;
+
+
     /**
      * 数据集合
      */
@@ -50,7 +56,34 @@ public class NetAudioFragment extends BaseFragment {
         Log.e(TAG, "网络音频UI被初始化了");
         View view = View.inflate(mContext, R.layout.fragment_net_audio, null);
         ButterKnife.bind(this, view);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                NetAudioBean.ListBean listEntity = datas.get(position);
+                if (listEntity != null) {
+                    //3.传递视频列表
+                    Intent intent = new Intent(mContext, ShowImageAndGifActivity.class);
+                    if (listEntity.getType().equals("gif")) {
+                        String url = listEntity.getGif().getImages().get(0);
+                        intent.putExtra("url", url);
+                        mContext.startActivity(intent);
+                    } else if (listEntity.getType().equals("image")) {
+                        String url = listEntity.getImage().getBig().get(0);
+                        intent.putExtra("url", url);
+                        mContext.startActivity(intent);
+                    }
+                }
+
+
+            }
+        });
+
+
         return view;
+
+
     }
 
     @Override
@@ -115,13 +148,13 @@ public class NetAudioFragment extends BaseFragment {
 
     private void processData(String json) {
         NetAudioBean netAudioBean = paraseJons(json);
-        List<NetAudioBean.ListBean> datas = netAudioBean.getList();
+        datas = netAudioBean.getList();
 
         if (datas != null && datas.size() > 0) {
             //有视频
             tvNomedia.setVisibility(View.GONE);
             //设置适配器
-            myAdapter = new NetAudioFragmentAdapter(mContext,datas);
+            myAdapter = new NetAudioFragmentAdapter(mContext, datas);
             listview.setAdapter(myAdapter);
         } else {
             //没有视频

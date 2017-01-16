@@ -18,6 +18,7 @@ package="com.atguigu.lmm.myplay">
         </intent-filter>
     </activity>
     <activity android:name=".MainActivity" />
+    <activity android:name=".Fragemnt.ShowImageAndGifActivity"/>
 </application>
 
 </manifest>
